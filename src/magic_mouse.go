@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gogf/gf/frame/g"
 	"github.com/gogf/gf/net/ghttp"
 )
@@ -11,7 +12,7 @@ func main() {
 	wp := g.Server("WebpageService")
 	wp.SetServerRoot("./public")
 	wp.SetPort(80)
-	wp.Start()
+	dropError(wp.Start())
 
 	// WebSocket 服务器
 	s := g.Server("WebSocketService")
@@ -21,15 +22,15 @@ func main() {
 		for {
 			_, msg, err := ws.ReadMessage()
 			dropError(err)
-			// 在这里弹一首 **夏威夷吉他**！！
-			// fmt.Println(msgType, string(msg), err)
 			var message Message
-			json.Unmarshal(msg, message)
+			dropError(json.Unmarshal(msg, &message))
+			fmt.Printf("Alpha: %.2f Beta: %.2f Gamma: %.2f\n", message.Data.Alpha, message.Data.Beta,
+				message.Data.Gamma)
 		}
 	})
 	s.SetFileServerEnabled(false)
 	s.SetPort(14514)
-	s.Start()
+	dropError(s.Start())
 
 	g.Wait()
 }

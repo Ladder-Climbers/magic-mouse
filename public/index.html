@@ -1,16 +1,47 @@
 <html>
 
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>MagicMouse</title>
 </head>
 
 <body>
   <h1>Magic Mouse</h1>
-  alpha:<span id="alpha"></span><br />
-  beta:<span id="beta"></span><br />
-  gamma:<span id="gamma"></span><br />
+  WebSocket Status:<span id="wsstatus"></span><br />
+  Alpha:<span id="alpha"></span><br />
+  Beta:<span id="beta"></span><br />
+  Gamma:<span id="gamma"></span><br />
   <script>
+    function showStatus(content) {
+      var status = document.getElementById("wsstatus");
+      status.innerHTML = content;
+    }
+    var apiUrl = 'ws://192.168.114.6:14514/api/v1/ws';
+    var ws = new WebSocket(apiUrl);
+    try {
+      ws.onopen = function () {
+        showStatus('Success');
+      };
+      ws.onclose = function () {
+        if (ws) {
+          ws.close();
+          ws = null;
+        }
+        showStatus('Closed');
+      };
+      ws.onerror = function () {
+        if (ws) {
+          ws.close();
+          ws = null;
+        }
+        showError('Error');
+      };
+    } catch (e) {
+      alert(e.message);
+    }
     if (window.DeviceOrientationEvent) {
       window.addEventListener('deviceorientation', function (event) {
         var a = document.getElementById('alpha'),
@@ -24,9 +55,19 @@
         b.innerHTML = Math.round(beta);
         g.innerHTML = Math.round(gamma);
 
+        var backJson = {
+          'cmd': 'data_angle_frame',
+          'data': {
+            'alpha': alpha,
+            'beta': beta,
+            'gamma': gamma,
+          }
+        };
+        ws.send(JSON.stringify(backJson));
+
       }, false);
     } else {
-      document.querySelector('body').innerHTML = '你的浏览器不支持陀螺仪';
+      document.querySelector('body').innerHTML = 'No supported sensors detected!';
     }
   </script>
 </body>
