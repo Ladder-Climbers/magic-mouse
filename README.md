@@ -4,23 +4,26 @@
 
 ## 控制原理
 
-HTML5网页能获取到移动设备的陀螺仪信息，可以利用这个信息控制屏幕上的鼠标移动。
+HTML5 网页能获取到移动设备的陀螺仪信息，可以利用这个信息控制屏幕上的鼠标移动。
 
 ## 计划
 
 ### 可行性验证
 
-- [x] HTML5能否获取陀螺仪信息
+- [x] HTML5 能否获取陀螺仪信息
 
   - [x] https://blog.csdn.net/qq_30100043/article/details/73323617
 
     <img src="README.assets/20170616111218449-1614946685636.jfif" alt="img" style="zoom:25%;" /><img src="README.assets/20170616111445577-1614946699217.jfif" alt="img" style="zoom:25%;" /><img src="README.assets/20170616111531843.jfif" alt="img" style="zoom:25%;" />
 - [ ] 陀螺仪信息处理
   
-  - [ ] 映射方式1：计算角度和初始的差，直接
-- [x] 后端能否简便使用Websocket
-  - [x] NodeJS的websocket原生支持
+  - [ ] 映射方式 1：计算角度和初始的差，直接
+- [x] 后端能否简便使用 WebSocket
+  - [x] NodeJS的 WebSocket 原生支持
   - [x] [Go websocket](https://blog.csdn.net/swan_tang/article/details/103530311)
+  - [x] GoFrame（选中）
+    - [x] GoFrame WebSocket：https://www.bookstack.cn/read/goframe-1.11/net-ghttp-websocket-index.md
+    - [x] 解析 JSON：`encoding/json` 包（https://www.cnblogs.com/ycyoes/p/5398796.html）
 - [x] 后端能否控制鼠标移动
   - [ ] [RobotJs](https://blog.csdn.net/qq_34995862/article/details/106501587)
   - [x] [RobotGo](https://www.ctolib.com/robotgo.html)
