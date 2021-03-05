@@ -1,9 +1,34 @@
 <html>
-  <head>
-    <meta charset="utf-8">
-    <title>MagicMouse</title>
-  </head>
-  <body>
-    <h1>Magic Mouse</h1>
-  </body>
+
+<head>
+  <meta charset="utf-8">
+  <title>MagicMouse</title>
+</head>
+
+<body>
+  <h1>Magic Mouse</h1>
+  alpha:<span id="alpha"></span><br />
+  beta:<span id="beta"></span><br />
+  gamma:<span id="gamma"></span><br />
+  <script>
+    if (window.DeviceOrientationEvent) {
+      window.addEventListener('deviceorientation', function (event) {
+        var a = document.getElementById('alpha'),
+          b = document.getElementById('beta'),
+          g = document.getElementById('gamma'),
+          alpha = event.alpha,
+          beta = event.beta,
+          gamma = event.gamma;
+
+        a.innerHTML = Math.round(alpha);
+        b.innerHTML = Math.round(beta);
+        g.innerHTML = Math.round(gamma);
+
+      }, false);
+    } else {
+      document.querySelector('body').innerHTML = '你的浏览器不支持陀螺仪';
+    }
+  </script>
+</body>
+
 </html>
