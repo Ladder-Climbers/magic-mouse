@@ -19,7 +19,7 @@
       var status = document.getElementById("wsstatus");
       status.innerHTML = content;
     }
-    var apiUrl = 'ws://192.168.114.6:14514/api/v1/ws';
+    var apiUrl = 'ws://' + window.location.host + ':14514/api/v1/ws';
     var ws = new WebSocket(apiUrl);
     try {
       ws.onopen = function () {
