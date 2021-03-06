@@ -12,3 +12,9 @@ type Message struct {
 	Cmd  string   `json:"cmd"`
 	Data DataType `json:"data"`
 }
+
+type Angle struct {
+	Alpha float32
+	Beta float32
+	Gamma float32
+}
