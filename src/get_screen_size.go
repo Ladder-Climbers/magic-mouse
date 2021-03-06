@@ -7,6 +7,6 @@ func callDLL(nIndex int) int {
 	return int(ret)
 }
 
-func GetScreenMetrics() (int, int) {
-	return callDLL(0), callDLL(1)
+func GetScreenMetrics() Screen {
+	return Screen{callDLL(0), callDLL(1)}
 }

@@ -5,12 +5,17 @@ import (
 	"fmt"
 	"github.com/gogf/gf/frame/g"
 	"github.com/gogf/gf/net/ghttp"
+	_ "math"
 )
 
 func main() {
 	// Get Screen Resolution
-	screenWidth, screenHeight := GetScreenMetrics()
-	fmt.Printf("Screen: %d x %d", screenWidth, screenHeight)
+	screenRes := GetScreenMetrics()
+	fmt.Printf("Screen: %d x %d\n", screenRes.Width, screenRes.Height)
+
+	var distance float32
+	distance = 1000
+	// distance = height / tan(beta_2) - tan(beta_1)
 
 	// Static Page Server
 	wp := g.Server("WebpageService")
@@ -32,11 +37,11 @@ func main() {
 			//	message.Data.Gamma)
 			switch message.Cmd {
 			case "data_angle_frame":
-				moveMouse(Angle{Alpha: 200, Beta: 0, Gamma: 0}, Angle{
+				moveMouse(Angle{Alpha: 100, Beta: 0, Gamma: 0}, Angle{
 					Alpha: message.Data.Alpha,
 					Beta:  message.Data.Beta,
 					Gamma: message.Data.Gamma,
-				})
+				}, screenRes, distance)
 			}
 		}
 	})
