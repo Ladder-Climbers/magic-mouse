@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+  <script src="http://libs.baidu.com/jquery/2.0.0/jquery.js"></script>
+  <style type="text/css">
+    * {
+      padding: 0;
+      margin: 0 auto;
+    }
+
+    body {
+      background-color: #333;
+    }
+
+    .compass {
+      position: relative;
+    }
+
+    .compass img {
+      width: 100%;
+    }
+
+    .compass .pa {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: -1;
+    }
+
+    .compass .pa_p {
+      color: #e46f19;
+      font-size: 40px;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1;
+    }
+
+    .box {
+      width: 90%;
+      margin: 20% auto;
+
+    }
+  </style>
+</head>
+
+<body>
+  <div class="box">
+    <div class="compass">
+      <!-- <img src="./img/a0.png">
+				<img class="pa" src="./img/a2.png" id="compass">
+				<img class="pa" src="./img/a3.png"> -->
+      <div class="pa pa_p"><span id="alpha"></span>°</div>
+    </div>
+  </div>
+
+</body>
+<script>
+  function throttle(method, delay, duration) {
+    var timer = null,
+      begin = new Date();
+    return function () {
+      var context = this,
+        args = arguments,
+        current = new Date();;
+      clearTimeout(timer);
+      if (current - begin >= duration) {
+        method.apply(context, args);
+        begin = current;
+      } else {
+        timer = setTimeout(function () {
+          method.apply(context, args);
+        }, delay);
+      }
+    }
+  }
+  let logged = false;
+  function holder(event) {
+    alpha = event.alpha || event.webkitCompassHeading;
+    if (!logged) {
+      console.log(alpha, event);
+      logged = true;
+    }
+    document.getElementById("alpha").innerHTML = Math.round(360 - event.alpha);
+  }
+  var ua = navigator.userAgent.toLowerCase();
+  if (/android/.test(ua)) {
+    // // function DeviceOrientationHandler(event) 
+    // window.addEventListener('deviceorientationabsolute', event => {
+    //   console.log(event);
+    //   document.getElementById("alpha").innerHTML = Math.round(360 - event.alpha);
+    //   // $('#compass').css('transform','rotate(-'+Math.round(360 - event.alpha)+'deg)')		  
+    // }, false);
+    //手机是否支持重力事件
+    if (window.DeviceOrientationEvent) {
+      window.addEventListener('deviceorientation', throttle(holder, 20, 35))
+    } else {
+      alert("Sorry your browser doesn't support Device Orientation");
+    }
+  } else {
+    // function DeviceOrientationHandler(event) 
+    window.addEventListener('deviceorientation', event => {
+      console.log(event);
+      document.getElementById("alpha").innerHTML = event.webkitCompassHeading;
+      // $('#compass').css('transform','rotate(-'+event.webkitCompassHeading+'deg)')		
+    }, false);
+  }
+</script>
+
+</html>

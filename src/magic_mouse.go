@@ -33,8 +33,8 @@ func main() {
 			dropError(err)
 			var message Message
 			dropError(json.Unmarshal(msg, &message))
-			//fmt.Printf("Alpha: %.2f Beta: %.2f Gamma: %.2f\n", message.Data.Alpha, message.Data.Beta,
-			//	message.Data.Gamma)
+			fmt.Printf("Alpha: %.2f Beta: %.2f Gamma: %.2f\n", message.Data.Alpha, message.Data.Beta,
+				message.Data.Gamma)
 			switch message.Cmd {
 			case "data_angle_frame":
 				moveMouse(Angle{Alpha: 100, Beta: 0, Gamma: 0}, Angle{
