@@ -58,6 +58,8 @@ func main() {
 				dropError(ws.WriteMessage(msgType, []byte("{\"cmd\":\"stop_from_server\"}")))
 				dropError(ws.Close())
 				return
+			case "key":
+				keyPress(message.Data.Keys)
 			}
 		}
 	})
