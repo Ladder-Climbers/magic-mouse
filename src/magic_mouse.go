@@ -28,20 +28,38 @@ func main() {
 	s.BindHandler("/api/v1/ws", func(r *ghttp.Request) {
 		ws, err := r.WebSocket()
 		dropError(err)
+		// Waiting for start command...
 		for {
-			_, msg, err := ws.ReadMessage()
+			msgType, msg, err := ws.ReadMessage()
 			dropError(err)
 			var message Message
 			dropError(json.Unmarshal(msg, &message))
-			fmt.Printf("Alpha: %.2f Beta: %.2f Gamma: %.2f\n", message.Data.Alpha, message.Data.Beta,
-				message.Data.Gamma)
+			if message.Cmd == "start" {
+				dropError(ws.WriteMessage(msgType, []byte("{\"cmd\":\"start_done\",\"message\":\"OK\"}")))
+				break
+			}
+		}
+
+		// Loop for operation
+		for {
+			msgType, msg, err := ws.ReadMessage()
+			dropError(err)
+			var message Message
+			dropError(json.Unmarshal(msg, &message))
 			switch message.Cmd {
 			case "data_angle_frame":
-				moveMouse(Angle{Alpha: 100, Beta: 0, Gamma: 0}, Angle{
-					Alpha: message.Data.Alpha,
-					Beta:  message.Data.Beta,
-					Gamma: message.Data.Gamma,
-				}, screenRes, distance)
+				moveMouse(Angle{
+					Alpha: 90,
+					Beta:  0,
+					Gamma: 0},
+					Angle{
+						Alpha: message.Data.Alpha,
+						Beta:  message.Data.Beta,
+						Gamma: message.Data.Gamma,
+					}, screenRes, distance)
+			case "stop_from_client":
+				dropError(ws.WriteMessage(msgType, []byte("{\"cmd\":\"stop_from_server\"}")))
+				ws.Close()
 			}
 		}
 	})
