@@ -15,8 +15,6 @@ func main() {
 
 	var distance float32
 	distance = 1000
-	// distance = height / tan(beta_2) - tan(beta_1)
-
 	// Static Page Server
 	wp := g.Server("WebpageService")
 	wp.SetServerRoot("./public")
@@ -39,7 +37,6 @@ func main() {
 				break
 			}
 		}
-
 		// Loop for operation
 		for {
 			msgType, msg, err := ws.ReadMessage()
@@ -59,7 +56,8 @@ func main() {
 					}, screenRes, distance)
 			case "stop_from_client":
 				dropError(ws.WriteMessage(msgType, []byte("{\"cmd\":\"stop_from_server\"}")))
-				ws.Close()
+				dropError(ws.Close())
+				return
 			}
 		}
 	})
