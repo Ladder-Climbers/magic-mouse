@@ -1,28 +1,24 @@
 import React from "react"
 import { Button } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
-import PlayArrowIcon from '@material-ui/icons/PlayArrow';
+import MouseIcon from '@material-ui/icons/Mouse';
 
 class RoundButton extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
   render() {
     // 就直接返回按钮好了
-    return (<div style={{ width: "100%" }}>
+    return (<div style={{ width: "100%", height: "100%" }}>
       <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
-        <Button color="primary">·</Button>
+        <Button size="large" color="primary">·</Button>
       </div>
       <div style={{ width: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
-        <Button color="primary" style={{ height: "100%" }}>·</Button>
-        <IconButton aria-label="play">
-          <PlayArrowIcon />
+        <Button size="large" color="primary" style={{ height: "100%" }}>·</Button>
+        <IconButton size="large" aria-label="play">
+          <MouseIcon />
         </IconButton>
-        <Button color="primary" style={{ height: "100%" }}>·</Button>
+        <Button size="large" color="primary" style={{ height: "100%" }}>·</Button>
       </div>
       <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
-        <Button color="primary">·</Button>
+        <Button size="large" color="primary">·</Button>
       </div>
     </div>);
   }
