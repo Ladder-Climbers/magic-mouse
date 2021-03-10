@@ -1,8 +1,8 @@
-package main
+package keypress
 
 import "github.com/go-vgo/robotgo"
 
-func mouseKeyPress(key int) {
+func MouseKeyPress(key int) {
 	switch key {
 	case 0:
 		robotgo.MouseClick("left", false)
@@ -13,4 +13,8 @@ func mouseKeyPress(key int) {
 	case 3:
 		robotgo.ScrollMouse(10, "down")
 	}
+}
+
+func KeyBoardPress(keys []string) {
+	// Hawaiian Guitar...
 }
