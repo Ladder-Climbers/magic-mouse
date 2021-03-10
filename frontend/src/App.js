@@ -71,11 +71,11 @@ class App extends React.Component {
         <div>
           <RoundButton></RoundButton>
         </div>
-        <div style={{ width: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
+        {/* 便捷单手操作 */}
+        <div style={{ width: "100%", display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
           <ButtonGroup size="large" color="primary">
-            <Button>左键</Button>
-            <Button>中键</Button>
-            <Button>右键</Button>
+            <Button>后退</Button>
+            <Button>前进</Button>
           </ButtonGroup>
         </div>
         <div>
