@@ -10,6 +10,5 @@ func init() {
 	s.SetServerRoot("/public")
 	s.BindHandler("/api/v1/ws", ws.WebSocketResponder)
 	s.SetFileServerEnabled(true)
-	s.SetPort(14514)
+	s.SetPort(80)
 }
-

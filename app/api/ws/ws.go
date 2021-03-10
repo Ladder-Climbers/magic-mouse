@@ -8,6 +8,7 @@ import (
 	"magic_mouse/app/service/droperror"
 	"magic_mouse/app/service/keypress"
 	"magic_mouse/app/service/mvmouse"
+	"os"
 )
 
 func WebSocketResponder(r *ghttp.Request) {
@@ -35,15 +36,14 @@ func WebSocketResponder(r *ghttp.Request) {
 		// Make a choice...
 		switch message.Cmd {
 		case "data_angle_frame":
-			mvmouse.MoveMouse(mgmtype.Angle{Alpha: 90, Beta:  0,Gamma: 0},
-				mgmtype.Angle{Alpha: message.Data.Alpha,Beta:  message.Data.Beta,Gamma: message.Data.Gamma,},
+			mvmouse.MoveMouse(mgmtype.Angle{Alpha: 180, Beta: 0, Gamma: 0},
+				mgmtype.Angle{Alpha: message.Data.Alpha, Beta: message.Data.Beta, Gamma: message.Data.Gamma},
 				mgmargs.Screen, mgmargs.Distance)
 		case "stop_from_client":
 			droperror.DropError(socket.WriteMessage(msgType, []byte("{\"cmd\":\"stop_from_server\"}")))
 			droperror.DropError(socket.Close())
-			// Stop this function.
-			// I'm wondering if the program will be stop by this.
-			return
+			// Stop this program
+			os.Exit(0)
 		case "key":
 			keypress.KeyBoardPress(message.Data.Keys)
 		case "mouse":

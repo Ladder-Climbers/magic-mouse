@@ -16,5 +16,12 @@ func MouseKeyPress(key int) {
 }
 
 func KeyBoardPress(keys []string) {
-	// Hawaiian Guitar...
+	for _, key := range keys {
+		robotgo.KeyToggle(key, "down")
+		robotgo.MilliSleep(50)
+	}
+	robotgo.MilliSleep(100)
+	for _, key := range keys {
+		robotgo.KeyToggle(key, "up")
+	}
 }
