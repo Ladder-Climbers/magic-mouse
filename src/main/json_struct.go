@@ -4,7 +4,7 @@ type DataType struct {
 	Alpha   float32 `json:"alpha"`
 	Beta    float32 `json:"beta"`
 	Gamma   float32 `json:"gamma"`
-	Key     int     `json:"key"`
+	Keys    []int   `json:"keys"`
 	Message string  `json:"message"`
 }
 
