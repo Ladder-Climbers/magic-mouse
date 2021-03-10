@@ -15,6 +15,7 @@ func main() {
 
 	var distance float32
 	distance = 1000
+
 	// Static Page Server
 	wp := g.Server("WebpageService")
 	wp.SetServerRoot("./public")
@@ -60,6 +61,8 @@ func main() {
 				return
 			case "key":
 				keyPress(message.Data.Keys)
+			case "mouse":
+				mouseKeyPress(message.Data.MouseKey)
 			}
 		}
 	})
