@@ -8,12 +8,26 @@ class Config {
     this.save = this.save.bind(this);
     this.theme_avaliable = {
       "default": createMuiTheme({}),
-      "dark": createMuiTheme({
+      dark: createMuiTheme({
         palette: {
           type: "dark"
         },
       }),
     }
+    // 按键映射数据
+    this.key_mapping_templates = {
+      "default": {
+        left: ["left"],
+        right: ["right"],
+        up: ["up"],
+        down: ["down"],
+        start: ["f5"],
+        stop: ["esc"],
+        writing: ["ctrl", 'p'],
+        laser: ["ctrl", 'l'],
+        ink: ['ctrl', 'm']
+      }
+    };
     // 在构造函数执行的时候加载保存的数据
     this.data_default = {
       debug: true,
@@ -32,10 +46,13 @@ class Config {
       theme_avaliable: [
         'default',
         'dark'
-      ]
+      ],
+      // 按键映射
+      key_mapping_name: "default"
     };
     this.data = this.data_default;
     this.theme = this.theme_avaliable["default"];
+    this.key_mapping = this.key_mapping_templates['default'];
     this.load();
   }
 
@@ -68,6 +85,8 @@ class Config {
     }
     this.theme = this.theme_avaliable[this.data.theme_name];
     if (!this.theme) this.theme = this.theme_avaliable["default"];
+    this.key_mapping = this.key_mapping_templates[this.data.key_mapping_name];
+    if (!this.key_mapping) this.key_mapping = this.key_mapping_templates['default'];
   }
 
   save() {

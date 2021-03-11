@@ -1,6 +1,7 @@
 import React from "react"
 import { Button } from '@material-ui/core';
-import RoundButton from "./components/RoundButton"
+import MouseIcon from '@material-ui/icons/Mouse';
+import IconButton from '@material-ui/core/IconButton';
 import Container from '@material-ui/core/Container';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
 import Config from "./Config"
@@ -26,7 +27,10 @@ class App extends React.Component {
     super(props)
     this.orientationHandler = this.orientationHandler.bind(this);
     this.render = this.render.bind(this);
-    this.startConnect = this.connectStart.bind(this);
+    this.connectStart = this.connectStart.bind(this);
+    this.connectEnd = this.connectEnd.bind(this);
+    this.handleButtons = this.handleButtons.bind(this);
+    this.handleMouseClick = this.handleMouseClick.bind(this);
 
     this.config = new Config();
     // 没开始连接，未初始化
@@ -39,10 +43,14 @@ class App extends React.Component {
       orientation: {},
       openSettings: false,
       connected: false,
+      playing: false,
+      writing: false,
+      laser: false,
+      ink: true,
     };
 
     if (window.DeviceOrientationEvent) {
-      window.addEventListener("deviceorientation", this.throttle(this.orientationHandler, 60, 60), false);
+      window.addEventListener("deviceorientation", this.throttle(this.orientationHandler, 40, 40), false);
     } else {
       console.log("Does not support deviceorientation!");
     };
@@ -87,7 +95,7 @@ class App extends React.Component {
       beta: event.beta - this.angleInit.beta,
       gamma: event.gamma - this.angleInit.gamma
     })));
-    console.log("orientation", event);
+    // console.log("orientation", event);
   }
 
   connectStart() {
@@ -106,6 +114,7 @@ class App extends React.Component {
           connected: false
         });
         console.log("Ws: closed.");
+        this.ws = null;
       };
       this.ws.onerror = () => {
         console.error("Websocket Error!!!");
@@ -117,9 +126,36 @@ class App extends React.Component {
     console.log('this.ws', this.ws);
   }
 
-  connectStop() {
-    this.ws.send(JSON.stringify(dataWrapper("stop_from_client")));
+  connectEnd() {
+    if (!this.ws || !this.state.connected || this.connecting) return;
     this.ws.close();
+    this.angleInit = null;
+  }
+
+  connectStop() {
+    if (!this.ws || !this.state.connected || this.connecting) return;
+    this.ws.send(JSON.stringify(dataWrapper("stop_from_client")));
+    this.connectEnd();
+  }
+
+  handleButtons(button) {
+    console.log("handleButtons:", button);
+    if (!button || !this.state.connected || !this.ws) return;
+    let keys = this.config.key_mapping[button];
+    if (!keys) return;
+
+    this.ws.send(JSON.stringify(dataWrapper("key", {
+      keys: keys
+    })));
+  }
+
+  handleMouseClick(button) {
+    console.log("handleMouseClick:", button);
+    if (!this.state.connected || !this.ws) return;
+
+    this.ws.send(JSON.stringify(dataWrapper("mouse", {
+      mouse_key: button
+    })));
   }
 
   render() {
@@ -144,12 +180,12 @@ class App extends React.Component {
             </Grid>
             <Grid container spacing={3}>
               <Grid item xs={4}>
-                <MyButton icon={PowerSettingsNewIcon} color={this.state.connected ? "success" : "secondary"} text={"连接"} onClick={() => {
+                <MyButton icon={PowerSettingsNewIcon} color="success" text={"连接"} onClick={() => {
                   if (this.connecting) return;
                   if (!this.state.connected) {
                     this.connectStart();
                   } else {
-                    this.connectStop();
+                    this.connectEnd();
                   }
                 }}></MyButton>
               </Grid>
@@ -157,35 +193,65 @@ class App extends React.Component {
                 <MyButton icon={AvTimerIcon} text={"计时"}></MyButton>
               </Grid>
               <Grid item xs={4}>
-                <MyButton icon={ExitToAppIcon} text={"断开"}></MyButton>
+                <MyButton icon={ExitToAppIcon} text={"关闭"} onClick={() => {
+                  this.connectStop();
+                }}></MyButton>
               </Grid>
             </Grid>
             <Grid container spacing={1}>
               <Grid item xs={5}>
                 <div style={{ width: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
                   <ButtonGroup color="primary">
-                    <Button>开始</Button>
-                    <Button>退出</Button>
+                    <Button onClick={() => {
+                      this.handleButtons("start");
+                      this.setState({ playing: true });
+                    }}>开始</Button>
+                    <Button onClick={() => {
+                      this.handleButtons("stop");
+                    }}>退出</Button>
                   </ButtonGroup>
                 </div>
               </Grid>
               <Grid item xs={7}>
                 <div style={{ width: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
                   <ButtonGroup color="primary">
-                    <Button variant="contained" disableElevation>书写</Button>
-                    <Button>激光</Button>
-                    <Button variant="contained" disableElevation>墨迹</Button>
+                    <Button variant={this.state.writing ? "contained" : "outlined"} disableElevation onClick={() => {
+                      this.handleButtons("writing");
+                      this.setState({ writing: !this.state.writing, laser: this.state.laser ? false : this.state.laser });
+                    }}>书写</Button>
+                    <Button variant={this.state.laser ? "contained" : "outlined"} disableElevation onClick={() => {
+                      this.handleButtons("laser");
+                      this.setState({ laser: !this.state.laser, writing: this.state.writing ? false : this.state.writing });
+                    }}>激光</Button>
+                    <Button variant={this.state.ink ? "contained" : "outlined"} disableElevation onClick={() => {
+                      this.handleButtons("ink");
+                      this.setState({ ink: !this.state.ink });
+                    }}>墨迹</Button>
                   </ButtonGroup>
                 </div>
               </Grid>
             </Grid>
           </div>
-          <RoundButton></RoundButton>
+          <div style={{ width: "100%", height: "100%" }}>
+            <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+              <Button size="large" color="primary" style={{ width: 100 }} onClick={() => { this.handleButtons("up"); }}>·</Button>
+            </div>
+            <div style={{ width: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
+              <Button size="large" color="primary" style={{ height: 100 }} onClick={() => { this.handleButtons("left"); }}>·</Button>
+              <IconButton aria-label="play" style={{ height: 100, width: 100 }} onClick={() => { this.handleMouseClick(0); }}>
+                <MouseIcon style={{ height: 100, width: 100 }} />
+              </IconButton>
+              <Button size="large" color="primary" style={{ height: 100 }} onClick={() => { this.handleButtons("right"); }}>·</Button>
+            </div>
+            <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+              <Button size="large" color="primary" style={{ width: 100 }} onClick={() => { this.handleButtons("down"); }}>·</Button>
+            </div>
+          </div>
           {/* 便捷单手操作 */}
           <div style={{ width: "60%", display: "flex", justifyContent: "flex-end", alignItems: "center", position: "fixed", bottom: "8%", right: "10%" }}>
             <ButtonGroup size="large" variant="contained" color="primary" disableElevation>
-              <Button>&lt;  后退</Button>
-              <Button>前进  &gt;</Button>
+              <Button onClick={() => { this.handleButtons("left"); }}>&lt;  后退</Button>
+              <Button onClick={() => { this.handleButtons("right"); }}>前进  &gt;</Button>
             </ButtonGroup>
           </div>
         </Container>
