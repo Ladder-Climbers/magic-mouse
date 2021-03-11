@@ -17,6 +17,9 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import MuiAlert from '@material-ui/lab/Alert';
 import SettingsDialog from './components/SettingsDialog'
 import { dataAngleFrame, dataWrapper } from "./utils/DataBeans"
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Dialog from '@material-ui/core/Dialog';
+import TextField from '@material-ui/core/TextField';
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -31,6 +34,7 @@ class App extends React.Component {
     this.connectEnd = this.connectEnd.bind(this);
     this.handleButtons = this.handleButtons.bind(this);
     this.handleMouseClick = this.handleMouseClick.bind(this);
+    this.handleSettingsClose = this.handleSettingsClose.bind(this);
 
     this.config = new Config();
     // 没开始连接，未初始化
@@ -47,15 +51,18 @@ class App extends React.Component {
       writing: false,
       laser: false,
       ink: true,
+      test_text: "",
     };
 
     if (window.DeviceOrientationEvent) {
-      window.addEventListener("deviceorientation", this.throttle(this.orientationHandler, 40, 40), false);
+      window.addEventListener("deviceorientation", this.throttle(this.orientationHandler, 20, 20), false);
     } else {
       console.log("Does not support deviceorientation!");
     };
     console.log(this.config);
     console.log(this.config.theme);
+
+    this.test_text = "";
   }
 
   throttle(method, delay, duration) {
@@ -158,15 +165,22 @@ class App extends React.Component {
     })));
   }
 
+  handleSettingsClose() {
+    this.setState({ openSettings: false });
+    console.log("Settings: got", document.querySelector("#settings-api").value);
+    this.config.data.api = document.querySelector("#settings-api").value;
+    this.config.save();
+  }
+
   render() {
     return (<div>
       <ThemeProvider theme={this.config.theme}>
-        <SettingsDialog open={this.state.openSettings} config={this.config} />
         <Container maxWidth="xs">
           <div style={{ width: "100%" }}>
             <Grid container spacing={3}>
               <Grid item xs={4}>
                 <MyButton icon={SettingsIcon} text={"设置"} onClick={() => {
+                  console.log("Opening settings...");
                   this.setState({
                     openSettings: true
                   });
@@ -180,7 +194,7 @@ class App extends React.Component {
             </Grid>
             <Grid container spacing={3}>
               <Grid item xs={4}>
-                <MyButton icon={PowerSettingsNewIcon} color="success" text={"连接"} onClick={() => {
+                <MyButton icon={PowerSettingsNewIcon} color={this.state.connected ? "secondary" : "default"} text={"连接"} onClick={() => {
                   if (this.connecting) return;
                   if (!this.state.connected) {
                     this.connectStart();
@@ -255,6 +269,11 @@ class App extends React.Component {
             </ButtonGroup>
           </div>
         </Container>
+        {/* <SettingsDialog open={this.state.openSettings} config={this.config} /> */}
+        <Dialog onClose={this.handleSettingsClose} open={this.state.openSettings}>
+          <DialogTitle>设置</DialogTitle>
+          <TextField id="settings-api" label="API" variant="outlined" defaultValue={this.config.data.api}/>
+        </Dialog>
       </ThemeProvider>
     </div >)
   }
