@@ -16,8 +16,9 @@ class Config {
     }
     // 在构造函数执行的时候加载保存的数据
     this.data_default = {
+      debug: true,
       version_frontend: 0.11,
-      api: "/api/v1/ws",
+      api: "ws://192.168.42.214/api/v1/ws",
       // 设置页面地址
       url_config: "/config",
       // 惯用手
@@ -40,6 +41,10 @@ class Config {
 
   load() {
     console.log("Config: loading magic mouse config...");
+    if (this.data.debug) {
+      console.log("Config: load default config.");
+      this.save();
+    }
     try {
       this.data = JSON.parse(localStorage.getItem(this.ITEM_NAME));
       if (!this.data) throw new Error("Null data");

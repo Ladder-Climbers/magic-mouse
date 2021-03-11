@@ -14,31 +14,32 @@ import AvTimerIcon from '@material-ui/icons/AvTimer';
 import SlideshowIcon from '@material-ui/icons/Slideshow';
 import SettingsIcon from '@material-ui/icons/Settings';
 import MuiAlert from '@material-ui/lab/Alert';
+import SettingsDialog from './components/SettingsDialog'
+import { dataAngleFrame, dataWrapper } from "./utils/DataBeans"
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 
 class App extends React.Component {
-  API = "wws://www.chio.work:14514/api/v1/ws";
-
   constructor(props) {
     super(props)
     this.orientationHandler = this.orientationHandler.bind(this);
-    // this.motionHandler = this.motionHandler.bind(this);
+    this.render = this.render.bind(this);
+    this.startConnect = this.connectStart.bind(this);
 
     this.config = new Config();
+    // 没开始连接，未初始化
+    this.ws = null;
+    this.connecting = false;
+    // 初始化
+    this.angleInit = null;
 
     this.state = {
       orientation: {},
-      motion: {}
+      openSettings: false,
+      connected: false,
     };
-
-    // if (window.DeviceMotionEvent) {
-    //   window.addEventListener("devicemotion", this.throttle(this.motionHandler, 30, 45), false);
-    // } else {
-    //   console.log("Does not support devicemotion!");
-    // }
 
     if (window.DeviceOrientationEvent) {
       window.addEventListener("deviceorientation", this.throttle(this.orientationHandler, 60, 60), false);
@@ -69,27 +70,71 @@ class App extends React.Component {
   }
 
   orientationHandler = (event) => {
+    if (!this.state.connected || !this.ws) return;
+    if (typeof (event.alpha) === 'null') {
+      console.warn("Handle: null event!");
+      return;
+    }
+    if (!this.angleInit) {
+      this.angleInit = {
+        alpha: event.alpha,
+        beta: event.beta,
+        gamma: event.gamma
+      }
+    }
+    this.ws.send(JSON.stringify(dataAngleFrame({
+      alpha: event.alpha - this.angleInit.alpha,
+      beta: event.beta - this.angleInit.beta,
+      gamma: event.gamma - this.angleInit.gamma
+    })));
     console.log("orientation", event);
-    this.setState({
-      orientation: event
-    });
   }
 
-  // motionHandler = (event) => {
-  //   console.log("motion", event);
-  //   this.setState({
-  //     motion: event
-  //   });
-  // }
+  connectStart() {
+    this.connecting = true;
+    try {
+      this.ws = new WebSocket(this.config.data.api);
+      this.ws.onopen = () => {
+        console.log("Ws: connected.");
+        this.ws.send(JSON.stringify(dataWrapper("start")));
+        this.setState({
+          connected: true
+        });
+      };
+      this.ws.onclose = () => {
+        this.setState({
+          connected: false
+        });
+        console.log("Ws: closed.");
+      };
+      this.ws.onerror = () => {
+        console.error("Websocket Error!!!");
+      };
+    } catch (e) {
+      console.error('Error when trying to connect!', e);
+    }
+    this.connecting = false;
+    console.log('this.ws', this.ws);
+  }
+
+  connectStop() {
+    this.ws.send(JSON.stringify(dataWrapper("stop_from_client")));
+    this.ws.close();
+  }
 
   render() {
     return (<div>
       <ThemeProvider theme={this.config.theme}>
+        <SettingsDialog open={this.state.openSettings} config={this.config} />
         <Container maxWidth="xs">
           <div style={{ width: "100%" }}>
             <Grid container spacing={3}>
               <Grid item xs={4}>
-                <MyButton icon={SettingsIcon} text={"设置"}></MyButton>
+                <MyButton icon={SettingsIcon} text={"设置"} onClick={() => {
+                  this.setState({
+                    openSettings: true
+                  });
+                }}></MyButton>
               </Grid>
               <Grid item xs={1}>
               </Grid>
@@ -99,7 +144,14 @@ class App extends React.Component {
             </Grid>
             <Grid container spacing={3}>
               <Grid item xs={4}>
-                <MyButton icon={PowerSettingsNewIcon} color="secondary" text={"连接"}></MyButton>
+                <MyButton icon={PowerSettingsNewIcon} color={this.state.connected ? "success" : "secondary"} text={"连接"} onClick={() => {
+                  if (this.connecting) return;
+                  if (!this.state.connected) {
+                    this.connectStart();
+                  } else {
+                    this.connectStop();
+                  }
+                }}></MyButton>
               </Grid>
               <Grid item xs={4}>
                 <MyButton icon={AvTimerIcon} text={"计时"}></MyButton>
@@ -135,15 +187,6 @@ class App extends React.Component {
               <Button>&lt;  后退</Button>
               <Button>前进  &gt;</Button>
             </ButtonGroup>
-          </div>
-          <div>
-            <span>Orientation: </span><div>
-              {JSON.stringify({
-                alpha: Math.floor(360 - this.state.orientation.alpha),
-                beta: Math.floor(this.state.orientation.beta),
-                gamma: Math.floor(this.state.orientation.gamma)
-              })}
-            </div>
           </div>
         </Container>
       </ThemeProvider>

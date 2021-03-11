@@ -8,17 +8,17 @@ class RoundButton extends React.Component {
     // 就直接返回按钮好了
     return (<div style={{ width: "100%", height: "100%" }}>
       <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
-        <Button size="large" color="primary">·</Button>
+        <Button size="large" color="primary" style={{ width: 100 }}>·</Button>
       </div>
       <div style={{ width: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
-        <Button size="large" color="primary" style={{ height: "100%" }}>·</Button>
-        <IconButton size="large" aria-label="play">
-          <MouseIcon />
+        <Button size="large" color="primary" style={{ height: 100 }}>·</Button>
+        <IconButton aria-label="play" style={{ height: 100, width: 100 }}>
+          <MouseIcon style={{ height: 100, width: 100 }}/>
         </IconButton>
-        <Button size="large" color="primary" style={{ height: "100%" }}>·</Button>
+        <Button size="large" color="primary" style={{ height: 100 }}>·</Button>
       </div>
       <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
-        <Button size="large" color="primary">·</Button>
+      <Button size="large" color="primary" style={{ width: 100 }}>·</Button>
       </div>
     </div>);
   }
