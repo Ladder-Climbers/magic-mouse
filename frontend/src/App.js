@@ -108,7 +108,7 @@ class App extends React.Component {
   connectStart() {
     this.connecting = true;
     try {
-      this.ws = new WebSocket(this.config.data.api);
+      this.ws = new WebSocket(this.config.data.protocol + "://" + this.config.data.host + this.config.data.api);
       this.ws.onopen = () => {
         console.log("Ws: connected.");
         this.ws.send(JSON.stringify(dataWrapper("start")));
@@ -246,7 +246,7 @@ class App extends React.Component {
               </Grid>
             </Grid>
           </div>
-          <div style={{ width: "100%", height: "100%" }}>
+          <div style={{ width: "100%", height: "100%", marginTop: "25%" }}>
             <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
               <Button size="large" color="primary" style={{ width: 100 }} onClick={() => { this.handleButtons("up"); }}>·</Button>
             </div>
@@ -272,7 +272,9 @@ class App extends React.Component {
         {/* <SettingsDialog open={this.state.openSettings} config={this.config} /> */}
         <Dialog onClose={this.handleSettingsClose} open={this.state.openSettings}>
           <DialogTitle>设置</DialogTitle>
-          <TextField id="settings-api" label="API" variant="outlined" defaultValue={this.config.data.api}/>
+          <Container maxWidth="xs">
+            <TextField id="settings-api" label="PC地址" variant="outlined" defaultValue={this.config.data.host} />
+          </Container>
         </Dialog>
       </ThemeProvider>
     </div >)

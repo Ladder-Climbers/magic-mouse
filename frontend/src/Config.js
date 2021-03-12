@@ -30,9 +30,11 @@ class Config {
     };
     // 在构造函数执行的时候加载保存的数据
     this.data_default = {
-      debug: false,
+      debug: true,
       version_frontend: 0.11,
-      api: "ws://10.251.124.73/api/v1/ws",
+      protocol: "ws",
+      host: "localhost",
+      api: '/api/v1/ws',
       // 设置页面地址
       url_config: "/config",
       // 惯用手
