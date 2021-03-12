@@ -13,7 +13,7 @@ HTML5 网页能获取到移动设备的陀螺仪信息，可以利用这个信�
 - [x] HTML5 能否获取陀螺仪信息（https://blog.csdn.net/qq_30100043/article/details/73323617）
 
     <img src="README.assets/20170616111218449-1614946685636.jfif" alt="img" style="zoom:25%;" /><img src="README.assets/20170616111445577-1614946699217.jfif" alt="img" style="zoom:25%;" /><img src="README.assets/20170616111531843.jfif" alt="img" style="zoom:25%;" />
-- [ ] 陀螺仪信息处理
+- [x] 陀螺仪信息处理
   - [x] 映射方式 1：计算角度和初始的差，直接应用到x/y坐标（三角函数）
   - [ ] 映射方式 2：（未定）
 - [x] 后端能否简便使用 WebSocket
@@ -182,3 +182,12 @@ HTML5 网页能获取到移动设备的陀螺仪信息，可以利用这个信�
 **服务端**
 
 普通的单页
+
+#### 开放源代码许可
+
+本项目采用 MIT 许可证。
+
+本项目使用到的其他开源库：
+
+- [RobotGo](https://github.com/go-vgo/robotgo/)，遵循 Apache 许可证。
+- [GoFrame](https://github.com/gogf/gf)，遵循 MIT 许可证。
